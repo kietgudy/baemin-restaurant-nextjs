@@ -129,6 +129,7 @@ const request = async <Response>(
           }
         }
       } else {
+        //Trường hợp khi còn access token, gọi API ở Nextjs server đến server backend
         const accessToken = (options?.headers as any)?.Authorization.split(
           'Bearer '
         )[1]

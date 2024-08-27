@@ -1,9 +1,21 @@
 import http from "@/lib/http";
-import { AccountResType, ChangePasswordBodyType, UpdateMeBodyType } from "@/schemaValidations/account.schema";
+import {
+  AccountResType,
+  ChangePasswordBodyType,
+  UpdateMeBodyType,
+} from "@/schemaValidations/account.schema";
 
 const accountApiRequest = {
-    me: () => http.get<AccountResType>("/accounts/me"),
-    update: (body: UpdateMeBodyType) => http.put<AccountResType>("/accounts/me", body),
-    changePassword: (body: ChangePasswordBodyType) => http.put<AccountResType>("/accounts/change-password", body)
-}
+  me: () => http.get<AccountResType>("/accounts/me"),
+  serverMe: (accessToken: string) =>
+    http.get<AccountResType>("/accounts/me", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }),
+  update: (body: UpdateMeBodyType) =>
+    http.put<AccountResType>("/accounts/me", body),
+  changePassword: (body: ChangePasswordBodyType) =>
+    http.put<AccountResType>("/accounts/change-password", body),
+};
 export default accountApiRequest;
