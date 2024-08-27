@@ -12,13 +12,13 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { useLogoutMutation } from '@/queries/useAuth'
 import { useRouter } from 'next/navigation'
-import { useAccount } from '@/queries/useAccount'
+import { useAccountMe } from '@/queries/useAccount'
 
 
 export default function DropdownAvatar() {
   const router = useRouter()
   const logoutMutation = useLogoutMutation()
-  const {data} = useAccount()
+  const {data} = useAccountMe()
   const account = data?.payload.data
   const handleLogout = async () => {
     if(logoutMutation.isPending) return
