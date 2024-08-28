@@ -3,10 +3,11 @@
 import {
   getAccessTokenFromLocalStorage,
   getRefreshTokenFromLocalStorage,
+  removeTokenFromLocalStorage,
   setAccessTokenToLocalStorage,
   setRefreshTokenToLocalStorage,
 } from "@/lib/utils";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import jwt from "jsonwebtoken";
 import authApiRequest from "@/apiRequests/auth";
@@ -15,6 +16,7 @@ import authApiRequest from "@/apiRequests/auth";
 const UNAUTHENTICATED_PATH = ["/login", "/logout", "/refresh-token"];
 export default function RefreshToken() {
   const pathname = usePathname();
+  const router = useRouter();
   useEffect(() => {
     if (UNAUTHENTICATED_PATH.includes(pathname)) return;
     let interval: any = null;
@@ -31,24 +33,31 @@ export default function RefreshToken() {
         iat: number;
       };
       const now = Math.round(new Date().getTime() / 1000);
-      if (decodedRefreshToken.exp <= now) return;
+      //Refresh token hết hạn => logout
+      if (decodedRefreshToken.exp <= now) {
+        removeTokenFromLocalStorage();
+        router.push("/login");
+        return;
+      }
       if (
         decodedAccessToken.exp - now <
         (decodedAccessToken.exp - decodedAccessToken.iat) / 3
       ) {
         // Call refresh token
         try {
-            const res = await authApiRequest.clientRefreshToken();
-            setAccessTokenToLocalStorage(res.payload.data.accessToken);
-            setRefreshTokenToLocalStorage(res.payload.data.refreshToken);
+          const res = await authApiRequest.clientRefreshToken();
+          setAccessTokenToLocalStorage(res.payload.data.accessToken);
+          setRefreshTokenToLocalStorage(res.payload.data.refreshToken);
         } catch (error) {
-            clearInterval(interval);
+          clearInterval(interval);
+          removeTokenFromLocalStorage();
+          router.push("/login");
         }
       }
     };
     checkAndRefreshToken();
     interval = setInterval(checkAndRefreshToken, 1000);
     return () => clearInterval(interval);
-  }, [pathname]);
+  }, [pathname, router]);
   return null;
 }
