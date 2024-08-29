@@ -15,11 +15,14 @@ import { LoginBody, LoginBodyType } from "@/schemaValidations/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLoginMumation } from "@/queries/useAuth";
 import { toast } from "@/components/ui/use-toast";
-import { handleErrorApi } from "@/lib/utils";
+import { handleErrorApi, removeTokenFromLocalStorage } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function LoginForm() {
   const router = useRouter();
+  const searchParams = new URLSearchParams();
+  const clearTokens = searchParams.get("clear-tokens");
   const loginMumation = useLoginMumation();
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
@@ -28,6 +31,11 @@ export default function LoginForm() {
       password: "",
     },
   });
+  useEffect(() => {
+    if (clearTokens !== null) {
+      removeTokenFromLocalStorage();
+    }
+  }, [clearTokens]);
 
   const onSubmit = async (data: LoginBodyType) => {
     if (loginMumation.isPending) return;
@@ -58,8 +66,8 @@ export default function LoginForm() {
           <form
             className="space-y-2 max-w-[600px] flex-shrink-0 w-full"
             noValidate
-            onSubmit={form.handleSubmit(onSubmit, err => {
-              console.warn(err)
+            onSubmit={form.handleSubmit(onSubmit, (err) => {
+              console.warn(err);
             })}
           >
             <div className="grid gap-4">

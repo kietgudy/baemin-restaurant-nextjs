@@ -32,7 +32,7 @@ export default function RefreshToken() {
         exp: number;
         iat: number;
       };
-      const now = Math.round(new Date().getTime() / 1000);
+      const now = (new Date().getTime() / 1000) - 1;
       //Refresh token hết hạn => logout
       if (decodedRefreshToken.exp <= now) {
         removeTokenFromLocalStorage();

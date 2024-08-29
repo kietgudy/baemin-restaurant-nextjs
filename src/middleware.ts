@@ -9,7 +9,9 @@ export function middleware(request: NextRequest) {
   const isAuth = Boolean(request.cookies.get("accessToken")?.value);
   // Chưa đăng nhập thì không cho vào privatePaths
   if (privatePaths.some((path) => pathname.startsWith(path)) && !isAuth) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    const url = new URL("/login", request.url);
+    url.searchParams.set("clear-tokens", "true");
+    return NextResponse.redirect(url);
   }
   // Đã đăng nhập thì không cho vào login
   if (loggedInPaths.some((path) => pathname.startsWith(path)) && isAuth) {
