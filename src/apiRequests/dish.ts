@@ -9,7 +9,7 @@ import {
 const dishApiRequest = {
   // Next.js 15 mặc định fetch { cache: 'no-store' } (dynamic rendering page)
   // Next.js 14 mặc định fetch { cache: 'force-cache' } nghĩa là cache (static rendering page)
-  list: () => http.get<DishListResType>("dishes"),
+  list: () => http.get<DishListResType>("dishes", { cache: "no-store" }),
   add: (body: CreateDishBodyType) => http.post<DishResType>("dishes", body),
   getDish: (id: number) => http.get<DishResType>(`dishes/${id}`),
   updateDish: (id: number, body: UpdateDishBodyType) =>
