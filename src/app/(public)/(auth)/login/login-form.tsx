@@ -18,11 +18,13 @@ import { toast } from "@/components/ui/use-toast";
 import { handleErrorApi, removeTokenFromLocalStorage } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { useAppContext } from "@/components/app-provider";
 
 export default function LoginForm() {
   const router = useRouter();
   const searchParams = new URLSearchParams();
   const clearTokens = searchParams.get("clear-tokens");
+  const { setRole } = useAppContext();
   const loginMumation = useLoginMumation();
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
@@ -32,10 +34,10 @@ export default function LoginForm() {
     },
   });
   useEffect(() => {
-    if (clearTokens !== null) {
-      removeTokenFromLocalStorage();
+    if (clearTokens) {
+      setRole()
     }
-  }, [clearTokens]);
+  }, [clearTokens, setRole]);
 
   const onSubmit = async (data: LoginBodyType) => {
     if (loginMumation.isPending) return;
@@ -44,6 +46,7 @@ export default function LoginForm() {
       toast({
         description: result.payload.message,
       });
+      setRole(result.payload.data.account.role)
       router.push("/manage/dashboard");
     } catch (error: any) {
       handleErrorApi({
