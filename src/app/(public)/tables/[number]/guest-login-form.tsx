@@ -19,11 +19,11 @@ export default function GuestLoginForm() {
   })
 
   return (
-    <Card className='mx-auto max-w-sm'>
+    <Card className='mx-auto max-w-sm min-h-[235px]'>
       <CardHeader>
         <CardTitle className='text-2xl'>Đăng nhập gọi món</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent >
         <Form {...form}>
           <form className='space-y-2 max-w-[600px] flex-shrink-0 w-full' noValidate>
             <div className='grid gap-4'>
