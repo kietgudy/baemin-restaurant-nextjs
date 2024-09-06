@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  decodeToken,
   getAccessTokenFromLocalStorage,
   getRefreshTokenFromLocalStorage,
   removeTokenFromLocalStorage,
@@ -11,6 +12,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import jwt from "jsonwebtoken";
 import authApiRequest from "@/apiRequests/auth";
+import { Role } from "@/constants/type";
+import guestApiRequest from "@/apiRequests/guest";
 
 // Những page sau sẽ không check refesh token
 const UNAUTHENTICATED_PATH = ["/login", "/logout", "/refresh-token"];
@@ -32,7 +35,7 @@ export default function RefreshToken() {
         exp: number;
         iat: number;
       };
-      const now = (new Date().getTime() / 1000) - 1;
+      const now = new Date().getTime() / 1000 - 1;
       //Refresh token hết hạn => logout
       if (decodedRefreshToken.exp <= now) {
         removeTokenFromLocalStorage();
@@ -45,7 +48,11 @@ export default function RefreshToken() {
       ) {
         // Call refresh token
         try {
-          const res = await authApiRequest.clientRefreshToken();
+          const role = decodeToken(refreshToken).role;
+          const res =
+            role === Role.Guest
+              ? await guestApiRequest.clientRefreshToken()
+              : await authApiRequest.clientRefreshToken();
           setAccessTokenToLocalStorage(res.payload.data.accessToken);
           setRefreshTokenToLocalStorage(res.payload.data.refreshToken);
         } catch (error) {
