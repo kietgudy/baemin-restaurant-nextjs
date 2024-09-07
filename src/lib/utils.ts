@@ -3,8 +3,8 @@ import { UseFormSetError } from "react-hook-form";
 import { twMerge } from "tailwind-merge";
 import { EntityError } from "./http";
 import { toast } from "@/components/ui/use-toast";
-import { DishStatus, TableStatus } from "@/constants/type";
-import jwt from 'jsonwebtoken';
+import { DishStatus, OrderStatus, TableStatus } from "@/constants/type";
+import jwt from "jsonwebtoken";
 import envConfig from "@/config";
 import { TokenPayload } from "@/types/jwt.types";
 
@@ -52,39 +52,68 @@ export const setRefreshTokenToLocalStorage = (value: string) =>
 export const removeTokenFromLocalStorage = () => {
   isBrowser && localStorage.removeItem("accessToken");
   isBrowser && localStorage.removeItem("refreshToken");
-}
+};
 export const formatCurrency = (number: number) => {
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND'
-  }).format(number)
-}
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(number);
+};
 
-export const getVietnameseDishStatus = (status: (typeof DishStatus)[keyof typeof DishStatus]) => {
+export const getVietnameseOrderStatus = (
+  status: (typeof OrderStatus)[keyof typeof OrderStatus]
+) => {
+  switch (status) {
+    case OrderStatus.Delivered:
+      return "Đã phục vụ";
+    case OrderStatus.Paid:
+      return "Đã thanh toán";
+    case OrderStatus.Pending:
+      return "Đang xử lý";
+    case OrderStatus.Processing:
+      return "Đang nấu";
+    default:
+      return "Đã hủy";
+  }
+};
+
+export const getVietnameseDishStatus = (
+  status: (typeof DishStatus)[keyof typeof DishStatus]
+) => {
   switch (status) {
     case DishStatus.Available:
-      return 'Có sẵn'
+      return "Có sẵn";
     case DishStatus.Unavailable:
-      return 'Không có sẵn'
+      return "Không có sẵn";
     default:
-      return 'Ẩn'
+      return "Ẩn";
   }
-}
+};
 
-export const getVietnameseTableStatus = (status: (typeof TableStatus)[keyof typeof TableStatus]) => {
+export const getVietnameseTableStatus = (
+  status: (typeof TableStatus)[keyof typeof TableStatus]
+) => {
   switch (status) {
     case TableStatus.Available:
-      return 'Có sẵn'
+      return "Có sẵn";
     case TableStatus.Reserved:
-      return 'Đã đặt'
+      return "Đã đặt";
     default:
-      return 'Ẩn'
+      return "Ẩn";
   }
-}
+};
 
-export const getTableLink = ({ token, tableNumber }: { token: string; tableNumber: number }) => {
-  return envConfig.NEXT_PUBLIC_URL + '/tables/' + tableNumber + '?token=' + token
-}
+export const getTableLink = ({
+  token,
+  tableNumber,
+}: {
+  token: string;
+  tableNumber: number;
+}) => {
+  return (
+    envConfig.NEXT_PUBLIC_URL + "/tables/" + tableNumber + "?token=" + token
+  );
+};
 export const decodeToken = (token: string) => {
-  return jwt.decode(token) as TokenPayload
-}
+  return jwt.decode(token) as TokenPayload;
+};
