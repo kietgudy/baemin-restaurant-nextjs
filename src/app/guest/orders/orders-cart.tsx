@@ -1,6 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { toast } from "@/components/ui/use-toast";
 import socket from "@/lib/socket";
 import { formatCurrency, getVietnameseOrderStatus } from "@/lib/utils";
 import { useGuestOrderListQuery } from "@/queries/useGuest";
@@ -24,21 +25,31 @@ const OrdersCart = () => {
 
     function onConnect() {}
 
-    function onDisconnect() {}
+    function onDisconnect() {
+      console.log("disconnected");
+    }
 
-    function onUpdateOrder(data: UpdateOrderResType['data']) {
+    function onUpdateOrder(data: UpdateOrderResType["data"]) {
+      const {
+        dishSnapshot: { name },
+        quantity,
+      } = data;
+      toast({
+        description: `Món ${name} (SL: ${quantity}) ${getVietnameseOrderStatus(data.status)}`,
+      });
       refetch();
     }
-    
+
     socket.on("update-order", onUpdateOrder);
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
 
     return () => {
+      socket.off("update-order", onUpdateOrder);
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
     };
-  }, []);
+  }, [refetch]);
   return (
     <>
       {orders.map((order, index) => (
