@@ -2,6 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/components/ui/use-toast";
+import { OrderStatus } from "@/constants/type";
 import socket from "@/lib/socket";
 import { formatCurrency, getVietnameseOrderStatus } from "@/lib/utils";
 import { useGuestOrderListQuery } from "@/queries/useGuest";
@@ -12,10 +13,46 @@ import { useEffect, useMemo } from "react";
 const OrdersCart = () => {
   const { data, refetch } = useGuestOrderListQuery();
   const orders = useMemo(() => data?.payload.data ?? [], [data]);
-  const totalPrice = useMemo(() => {
-    return orders.reduce((total, order) => {
-      return total + order.dishSnapshot.price * order.quantity;
-    }, 0);
+  const { notPaid, paid } = useMemo(() => {
+    return orders.reduce(
+      (total, order) => {
+        if (
+          order.status === OrderStatus.Delivered ||
+          order.status === OrderStatus.Processing ||
+          order.status === OrderStatus.Pending
+        ) {
+          return {
+            ...total,
+            notPaid: {
+              price:
+                total.notPaid.price + order.dishSnapshot.price * order.quantity,
+              quantity: total.notPaid.quantity + order.quantity,
+            },
+          };
+        }
+        if (order.status === OrderStatus.Paid) {
+          return {
+            ...total,
+            paid: {
+              price:
+                total.paid.price + order.dishSnapshot.price * order.quantity,
+              quantity: total.paid.quantity + order.quantity,
+            },
+          };
+        }
+        return total;
+      },
+      {
+        notPaid: {
+          price: 0,
+          quantity: 0,
+        },
+        paid: {
+          price: 0,
+          quantity: 0,
+        },
+      }
+    );
   }, [orders]);
 
   useEffect(() => {
@@ -35,7 +72,9 @@ const OrdersCart = () => {
         quantity,
       } = data;
       toast({
-        description: `Món ${name} (SL: ${quantity}) ${getVietnameseOrderStatus(data.status)}`,
+        description: `Món ${name} (SL: ${quantity}) ${getVietnameseOrderStatus(
+          data.status
+        )}`,
       });
       refetch();
     }
@@ -82,12 +121,22 @@ const OrdersCart = () => {
           </div>
         </div>
       ))}
+      {paid.quantity !== 0 && (
+        <div className="sticky bottom-0 bg-white p-3 rounded-2xl shadow-md flex justify-between items-center border-t border-gray-200">
+          <span className="text-lg font-semibold text-gray-700">
+            Đơn đã thanh toán · {paid.quantity} món
+          </span>
+          <span className="text-lg ml-2 font-semibold text-blue-600">
+            {formatCurrency(paid.price)}
+          </span>
+        </div>
+      )}
       <div className="sticky bottom-0 bg-white p-3 rounded-2xl shadow-md flex justify-between items-center border-t border-gray-200">
         <span className="text-lg font-semibold text-gray-700">
-          Tổng tiền · {orders.length} món
+          Đơn chưa thanh toán · {notPaid.quantity} món
         </span>
         <span className="text-lg ml-2 font-semibold text-blue-600">
-          {formatCurrency(totalPrice)}
+          {formatCurrency(notPaid.price)}
         </span>
       </div>
     </>
