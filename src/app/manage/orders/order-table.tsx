@@ -53,7 +53,10 @@ import { endOfDay, format, startOfDay } from "date-fns";
 import TableSkeleton from "@/app/manage/orders/table-skeleton";
 import { toast } from "@/components/ui/use-toast";
 import { GuestCreateOrdersResType } from "@/schemaValidations/guest.schema";
-import { useGetOrderListQuery, useUpdateOrderMutation } from "@/queries/useOrder";
+import {
+  useGetOrderListQuery,
+  useUpdateOrderMutation,
+} from "@/queries/useOrder";
 import { useTableListQuery } from "@/queries/useTable";
 import socket from "@/lib/socket";
 
@@ -109,7 +112,7 @@ export default function OrderTable() {
     pageSize: PAGE_SIZE, //default page size
   });
 
-  const updateOrderMutation = useUpdateOrderMutation()
+  const updateOrderMutation = useUpdateOrderMutation();
   const { statics, orderObjectByGuestId, servingGuestByTableNumber } =
     useOrderService(orderList);
 
@@ -122,7 +125,7 @@ export default function OrderTable() {
     try {
       await updateOrderMutation.mutateAsync(body);
     } catch (error) {
-      handleErrorApi({error})
+      handleErrorApi({ error });
     }
   };
 
@@ -199,16 +202,26 @@ export default function OrderTable() {
       refetch();
     }
 
+    function onPayment(data: PayGuestOrdersResType["data"]) {
+      const { guest } = data[0];
+      toast({
+        description: `Khách hàng ${guest?.name} tại bàn số ${guest?.tableNumber} thanh toán thành công ${data.length} đơn`,
+      });
+      refetch();
+    }
+
     socket.on("update-order", onUpdateOrder);
     socket.on("new-order", onNewOrder);
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
+    socket.on("payment", onPayment);
 
     return () => {
       socket.off("update-order", onUpdateOrder);
       socket.off("new-order", onNewOrder);
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
+      socket.off("payment", onPayment);
     };
   }, [fromDate, refetchOrderList, toDate]);
 
