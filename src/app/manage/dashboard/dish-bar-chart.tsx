@@ -4,6 +4,8 @@ import { Bar, BarChart, XAxis, YAxis } from 'recharts'
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
+import { DashboardIndicatorResType } from '@/schemaValidations/indicator.schema'
+import { useMemo } from 'react'
 
 const colors = [
   'var(--color-chrome)',
@@ -45,7 +47,13 @@ const chartData = [
   { name: 'edge', successOrders: 173, fill: 'var(--color-edge)' },
   { name: 'other', successOrders: 90, fill: 'var(--color-other)' }
 ]
-export function DishBarChart() {
+export function DishBarChart({chartData}: {chartData: DashboardIndicatorResType['data']['dishIndicator']}) {
+  const chartColors = useMemo(() => chartData.map((data, index) => {
+    return {
+      ...data,
+      fill: colors[index] ?? colors[colors.length - 1]
+    }
+  }), [chartData])
   return (
     <Card>
       <CardHeader>
@@ -56,7 +64,7 @@ export function DishBarChart() {
         <ChartContainer config={chartConfig}>
           <BarChart
             accessibilityLayer
-            data={chartData}
+            data={chartColors}
             layout='vertical'
             margin={{
               left: 0
@@ -71,12 +79,11 @@ export function DishBarChart() {
               tickFormatter={(value) => {
                 return value
 
-                // return chartConfig[value as keyof typeof chartConfig]?.label
               }}
             />
             <XAxis dataKey='successOrders' type='number' hide />
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-            <Bar dataKey='successOrders' name={'Đơn thanh toán'} layout='vertical' radius={5} />
+            <Bar dataKey='successOrders' name={'Đơn thanh toán:_'} layout='vertical' radius={5} />
           </BarChart>
         </ChartContainer>
       </CardContent>
