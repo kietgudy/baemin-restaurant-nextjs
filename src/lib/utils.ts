@@ -140,6 +140,7 @@ export const formatDateTimeToTimeString = (date: string | Date) => {
   return format(date instanceof Date ? date : new Date(date), 'HH:mm:ss')
 }
 
+
 export const OrderStatusIcon = {
   [OrderStatus.Pending]: Loader,
   [OrderStatus.Processing]: CookingPot,
