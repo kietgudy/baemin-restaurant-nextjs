@@ -15,16 +15,17 @@ import { LoginBody, LoginBodyType } from "@/schemaValidations/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLoginMumation } from "@/queries/useAuth";
 import { toast } from "@/components/ui/use-toast";
-import { handleErrorApi, removeTokenFromLocalStorage } from "@/lib/utils";
+import { handleErrorApi, generateSocketInstance } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useAppContext } from "@/components/app-provider";
+
 
 export default function LoginForm() {
   const router = useRouter();
   const searchParams = new URLSearchParams();
   const clearTokens = searchParams.get("clear-tokens");
-  const { setRole } = useAppContext();
+  const { setRole, setSocket } = useAppContext();
   const loginMumation = useLoginMumation();
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
@@ -48,6 +49,9 @@ export default function LoginForm() {
       });
       setRole(result.payload.data.account.role)
       router.push("/manage/dashboard");
+      setSocket(
+        generateSocketInstance(result.payload.data.accessToken)
+      );
     } catch (error: any) {
       handleErrorApi({
         error,

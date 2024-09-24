@@ -9,7 +9,7 @@ import jwt from "jsonwebtoken";
 import envConfig from "@/config";
 import { TokenPayload } from "@/types/jwt.types";
 import { format } from "date-fns";
-
+import { io } from "socket.io-client";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -138,6 +138,13 @@ export const formatDateTimeToLocaleString = (date: string | Date) => {
 
 export const formatDateTimeToTimeString = (date: string | Date) => {
   return format(date instanceof Date ? date : new Date(date), 'HH:mm:ss')
+}
+export const generateSocketInstance = (accessToken: string) => {
+  return io(envConfig.NEXT_PUBLIC_BACKEND_URL, {
+    auth: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
 }
 
 

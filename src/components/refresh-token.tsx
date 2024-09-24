@@ -14,12 +14,14 @@ import jwt from "jsonwebtoken";
 import authApiRequest from "@/apiRequests/auth";
 import { Role } from "@/constants/type";
 import guestApiRequest from "@/apiRequests/guest";
+import { useAppContext } from "./app-provider";
 
 // Những page sau sẽ không check refesh token
 const UNAUTHENTICATED_PATH = ["/login", "/logout", "/refresh-token"];
 export default function RefreshToken() {
   const pathname = usePathname();
   const router = useRouter();
+  const {socket, setSocket} = useAppContext();
   useEffect(() => {
     if (UNAUTHENTICATED_PATH.includes(pathname)) return;
     let interval: any = null;
@@ -39,6 +41,8 @@ export default function RefreshToken() {
       //Refresh token hết hạn => logout
       if (decodedRefreshToken.exp <= now) {
         removeTokenFromLocalStorage();
+        socket?.disconnect()
+        setSocket(undefined)
         router.push("/login");
         return;
       }
@@ -58,6 +62,8 @@ export default function RefreshToken() {
         } catch (error) {
           clearInterval(interval);
           removeTokenFromLocalStorage();
+          socket?.disconnect()
+          setSocket(undefined)
           router.push("/login");
         }
       }
@@ -65,6 +71,6 @@ export default function RefreshToken() {
     checkAndRefreshToken();
     interval = setInterval(checkAndRefreshToken, 1000);
     return () => clearInterval(interval);
-  }, [pathname, router]);
+  }, [pathname, router, setSocket, socket]);
   return null;
 }
