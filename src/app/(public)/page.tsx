@@ -22,6 +22,7 @@ export default async function Home() {
           width={400}
           height={200}
           quality={100}
+          priority={true}
           alt="Banner"
           className="absolute top-0 left-0 w-full h-full object-cover"
         />

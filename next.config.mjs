@@ -4,7 +4,7 @@ const nextConfig = {
     remotePatterns: [
       {
         hostname: 'localhost',
-        pathname: '/**'
+        pathname: '/**',
       },
       {
         hostname: 'via.placeholder.com',
