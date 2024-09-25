@@ -1,5 +1,5 @@
 "use client";
-import { useAppContext } from "@/components/app-provider";
+import { useAppStore } from "@/components/app-provider";
 import { toast } from "@/components/ui/use-toast";
 import { decodeToken, generateSocketInstance } from "@/lib/utils";
 import { useSetTokenToCookieMutation } from "@/queries/useAuth";
@@ -8,7 +8,8 @@ import { useEffect } from "react";
 
 const OAuthPage = () => {
   const { mutateAsync } = useSetTokenToCookieMutation();
-  const { setRole, setSocket } = useAppContext();
+  const setRole = useAppStore(state => state.setRole);
+  const setSocket = useAppStore(state => state.setSocket);
   const searchParams = useSearchParams();
   const accessToken = searchParams.get("accessToken");
   const refreshToken = searchParams.get("refreshToken");

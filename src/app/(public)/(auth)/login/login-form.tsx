@@ -18,33 +18,34 @@ import { toast } from "@/components/ui/use-toast";
 import { handleErrorApi, generateSocketInstance } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useAppContext } from "@/components/app-provider";
+import { useAppStore } from "@/components/app-provider";
 import envConfig from "@/config";
 import Link from "next/link";
 
 const getOauthGoogleUrl = () => {
-  const rootUrl = 'https://accounts.google.com/o/oauth2/v2/auth'
+  const rootUrl = "https://accounts.google.com/o/oauth2/v2/auth";
   const options = {
     redirect_uri: envConfig.NEXT_PUBLIC_GOOGLE_AUTHORIZED_REDIRECT_URI,
     client_id: envConfig.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-    access_type: 'offline',
-    response_type: 'code',
-    prompt: 'consent',
+    access_type: "offline",
+    response_type: "code",
+    prompt: "consent",
     scope: [
-      'https://www.googleapis.com/auth/userinfo.profile',
-      'https://www.googleapis.com/auth/userinfo.email'
-    ].join(' ')
-  }
-  const qs = new URLSearchParams(options)
-  return `${rootUrl}?${qs.toString()}`
-}
-const googleOauthUrl = getOauthGoogleUrl()
+      "https://www.googleapis.com/auth/userinfo.profile",
+      "https://www.googleapis.com/auth/userinfo.email",
+    ].join(" "),
+  };
+  const qs = new URLSearchParams(options);
+  return `${rootUrl}?${qs.toString()}`;
+};
+const googleOauthUrl = getOauthGoogleUrl();
 
 export default function LoginForm() {
   const router = useRouter();
   const searchParams = new URLSearchParams();
   const clearTokens = searchParams.get("clearTokens");
-  const { setRole, setSocket } = useAppContext();
+  const setRole = useAppStore(state => state.setRole);
+  const setSocket = useAppStore(state => state.setSocket);
   const loginMumation = useLoginMumation();
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
@@ -55,7 +56,7 @@ export default function LoginForm() {
   });
   useEffect(() => {
     if (clearTokens) {
-      setRole()
+      setRole();
     }
   }, [clearTokens, setRole]);
 
@@ -66,11 +67,9 @@ export default function LoginForm() {
       toast({
         description: result.payload.message,
       });
-      setRole(result.payload.data.account.role)
+      setRole(result.payload.data.account.role);
       router.push("/manage/dashboard");
-      setSocket(
-        generateSocketInstance(result.payload.data.accessToken)
-      );
+      setSocket(generateSocketInstance(result.payload.data.accessToken));
     } catch (error: any) {
       handleErrorApi({
         error,
@@ -140,9 +139,9 @@ export default function LoginForm() {
                 Đăng nhập
               </Button>
               <Link href={googleOauthUrl}>
-              <Button variant="outline" className="w-full" type="button">
-                Đăng nhập bằng Google
-              </Button>
+                <Button variant="outline" className="w-full" type="button">
+                  Đăng nhập bằng Google
+                </Button>
               </Link>
             </div>
           </form>

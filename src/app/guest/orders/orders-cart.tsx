@@ -1,6 +1,6 @@
 "use client";
 
-import { useAppContext } from "@/components/app-provider";
+import { useAppStore } from "@/components/app-provider";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/components/ui/use-toast";
 import { OrderStatus } from "@/constants/type";
@@ -13,7 +13,7 @@ import { useEffect, useMemo } from "react";
 const OrdersCart = () => {
   const { data, refetch } = useGuestOrderListQuery();
   const orders = useMemo(() => data?.payload.data ?? [], [data]);
-  const {socket} = useAppContext();
+  const socket = useAppStore(state => state.socket);
   const { notPaid, paid } = useMemo(() => {
     return orders.reduce(
       (total, order) => {

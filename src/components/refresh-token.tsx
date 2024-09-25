@@ -14,14 +14,15 @@ import jwt from "jsonwebtoken";
 import authApiRequest from "@/apiRequests/auth";
 import { Role } from "@/constants/type";
 import guestApiRequest from "@/apiRequests/guest";
-import { useAppContext } from "./app-provider";
+import { useAppStore } from "./app-provider";
 
 // Những page sau sẽ không check refesh token
 const UNAUTHENTICATED_PATH = ["/login", "/logout", "/refresh-token"];
 export default function RefreshToken() {
   const pathname = usePathname();
   const router = useRouter();
-  const {socket, setSocket} = useAppContext();
+  const socket = useAppStore(state => state.socket);
+  const setSocket = useAppStore(state => state.setSocket);
   useEffect(() => {
     if (UNAUTHENTICATED_PATH.includes(pathname)) return;
     let interval: any = null;
