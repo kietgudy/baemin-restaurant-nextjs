@@ -5,6 +5,7 @@ import { decodeToken, generateSocketInstance } from "@/lib/utils";
 import { useSetTokenToCookieMutation } from "@/queries/useAuth";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
+import { Suspense } from 'react'
 
 const OAuthPage = () => {
   const { mutateAsync } = useSetTokenToCookieMutation();
@@ -48,5 +49,11 @@ const OAuthPage = () => {
   ]);
   return null;
 };
+const OAuthPageWithSuspense = () => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <OAuthPage />
+  </Suspense>
+);
 
-export default OAuthPage;
+export default OAuthPageWithSuspense;
+
