@@ -1,7 +1,13 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import TableTable from '@/app/manage/tables/table-table'
 import { Suspense } from 'react'
+import { Metadata } from 'next';
 
+export const metadata: Metadata = {
+  title: "Quản Lý Bàn Ăn",
+  description:
+    "Quản Lý Bàn Ăn",
+};
 export default function TablesPage() {
   return (
     <main className='grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8'>

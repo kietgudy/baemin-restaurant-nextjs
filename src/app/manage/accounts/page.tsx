@@ -2,7 +2,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 
 import AccountTable from '@/app/manage/accounts/account-table'
 import { Suspense } from 'react'
+import { Metadata } from 'next';
 
+export const metadata: Metadata = {
+  title: "Quản Lý Nhân Viên",
+  description:
+    "Quản Lý Nhân Viên",
+};
 export default function Dashboard() {
   return (
     <main className='grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8'>

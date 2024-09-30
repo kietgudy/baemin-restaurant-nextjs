@@ -1,7 +1,13 @@
 import ChangePasswordForm from '@/app/manage/setting/change-password-form'
 import UpdateProfileForm from '@/app/manage/setting/update-profile-form'
 import { Badge } from '@/components/ui/badge'
+import { Metadata } from 'next';
 
+export const metadata: Metadata = {
+  title: "Cài Đặt",
+  description:
+    "Cài Đặt",
+};
 export default function Setting() {
   return (
     <main className='grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8'>

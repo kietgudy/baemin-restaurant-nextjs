@@ -11,8 +11,9 @@ const fontSans = FontSans({
   variable: "--font-sans",
 });
 export const metadata: Metadata = {
-  title: "Quán Ăn Baemy",
-  description: "The best eatery in the local",
+  title: "Nhà Hàng Baemyn",
+  description:
+    "Trải nghiệm ẩm thực đẳng cấp tại nhà hàng chất lượng ở Đà Nẵng. Chúng tôi tự hào mang đến những món ăn tinh tế, chế biến từ nguyên liệu tươi ngon nhất, trong không gian sang trọng và dịch vụ chuyên nghiệp. Đến với chúng tôi để tận hưởng hương vị ẩm thực đỉnh cao cùng phong cách phục vụ chu đáo.",
 };
 
 export default function RootLayout({
